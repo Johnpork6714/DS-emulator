@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nintendo DS Web Emulator (Mobil & Dator)</title>
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --card-bg: #1f2833;
+            --accent: #66fcf1;
+            --text-main: #c5c6c7;
+            --text-light: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: var(--text-light);
+            font-size: 1.4rem;
+            margin: 0 0 3px 0;
+        }
+
+        p.subtitle {
+            color: var(--accent);
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .main-layout {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        .emulator-section {
+            flex: 1;
+            min-width: 320px;
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .toolbar {
+            background: var(--card-bg);
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            border: 1px solid #2c353d;
+        }
+
+        .toolbar label {
+            font-weight: bold;
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        input[type="file"] {
+            color: var(--text-main);
+            font-size: 0.8rem;
+            width: 100%;
+            max-width: 220px;
+        }
+
+        button.fullscreen-btn {
+            background: var(--accent);
+            color: #0b0c10;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        #emulator-container {
+            width: 100%;
+            height: 480px;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.8);
+            border: 2px solid #2c353d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #555;
+            font-size: 0.9rem;
+            position: relative;
+        }
+
+        .sidebar {
+            width: 300px;
+            max-width: 100%;
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 1px solid #2c353d;
+            height: fit-content;
+        }
+
+        .sidebar h3 {
+            color: var(--accent);
+            margin-top: 0;
+            font-size: 1rem;
+            border-bottom: 1px solid #2c353d;
+            padding-bottom: 6px;
+        }
+
+        .controls-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .controls-list li {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(0,0,0,0.2);
+            padding: 5px 8px;
+            border-radius: 4px;
+        }
+
+        .key {
+            background: #0b0c10;
+            color: var(--accent);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .status-msg {
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: #a7ffeb;
+            text-align: center;
+        }
+
+        /* Anpassning för mindre skärmar / mobiler */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            #emulator-container {
+                height: 400px;
+            }
+            .main-layout {
+                flex-direction: column;
+                align-items: center;
+            }
+            .sidebar {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Nintendo DS Web Emulator</h1>
+        <p class="subtitle">Fungerar på Dator, Surfplatta & Mobil</p>
+    </header>
+
+    <div class="main-layout">
+        <!-- Emulatorsektion -->
+        <div class="emulator-section">
+            <div class="toolbar">
+                <div>
+                    <label for="romInput">Välj NDS / ZIP:</label><br>
+                    <input type="file" id="romInput" accept=".nds,.zip">
+                </div>
+                <button class="fullscreen-btn" onclick="toggleFullscreen()">Helskärm ⛶</button>
+            </div>
+
+            <div id="emulator-container">
+                Välj en lokal .nds- eller .zip-fil för att starta...
+            </div>
+            <div class="status-msg" id="statusMsg">Klar att starta</div>
+        </div>
+
+        <!-- Instruktioner / Kontroller -->
+        <div class="sidebar">
+            <h3>Dator (Tangentbord)</h3>
+            <ul class="controls-list">
+                <li><span>D-Pad</span> <span class="key">Piltangenter</span></li>
+                <li><span>Knapp A / B</span> <span class="key">X / Z</span></li>
+                <li><span>Knapp X / Y</span> <span class="key">S / A</span></li>
+                <li><span>L / R</span> <span class="key">Q / W</span></li>
+                <li><span>Start / Select</span> <span class="key">Enter / Shift</span></li>
+            </ul>
+
+            <h3 style="margin-top: 15px;">Mobil / Surfplatta</h3>
+            <p style="font-size: 0.8rem; line-height: 1.4; margin: 0; color: var(--text-main);">
+                Virtuella spelknappar dyker upp automatiskt på skärmen, och pekskärmen styrs med fingret.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function toggleFullscreen() {
+            const container = document.getElementById('emulator-container');
+            if (!document.fullscreenElement) {
+                container.requestFullscreen().catch(err => {
+                    alert("Kunde inte växla till helskärm: " + err.message);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        document.getElementById('romInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const statusMsg = document.getElementById('statusMsg');
+            statusMsg.innerText = `Laddar "${file.name}"...`;
+
+            const fileUrl = URL.createObjectURL(file);
+            const container = document.getElementById('emulator-container');
+            container.innerHTML = '';
+
+            window.EJS_player = '#emulator-container';
+            window.EJS_core = 'nds';
+            window.EJS_gameUrl = fileUrl;
+            window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
+            window.EJS_color = '#66fcf1';
+            window.EJS_startOnLoaded = true;
+
+            const oldScript = document.getElementById('ejs-loader');
+            if (oldScript) {
+                oldScript.remove();
+            }
+
+            const script = document.createElement('script');
+            script.id = 'ejs-loader';
+            script.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
+            
+            script.onload = () => {
+                statusMsg.innerText = `Spelet "${file.name}" körs!`;
+            };
+
+            document.body.appendChild(script);
+        });
+    </script>
+</body>
+</html>
